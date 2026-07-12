@@ -12,7 +12,7 @@ app.secret_key = 'arcade_python_secret_key_123'
 app.permanent_session_lifetime = timedelta(days=365) # Persistencia de 1 año
 
 def get_db():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('database.db', timeout=20.0)
     conn.row_factory = sqlite3.Row
     return conn
 
