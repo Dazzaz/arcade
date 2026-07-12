@@ -3,7 +3,6 @@ import json
 import os
 import random
 import sqlite3
-import migrate
 from datetime import timedelta
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -16,6 +15,51 @@ def get_db():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
     return conn
+
+def init_db():
+    conn = get_db()
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            user_id TEXT PRIMARY KEY,
+            username TEXT NOT NULL,
+            friends TEXT,
+            pending_requests TEXT,
+            password TEXT
+        )
+    ''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS scores (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT,
+            username TEXT,
+            game TEXT,
+            level INTEGER,
+            details TEXT
+        )
+    ''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS challenges (
+            id TEXT PRIMARY KEY,
+            creator_id TEXT,
+            target_id TEXT,
+            seed INTEGER,
+            settings TEXT,
+            creator_score INTEGER,
+            target_score INTEGER,
+            status TEXT
+        )
+    ''')
+    # Intentar añadir la columna password si la base de datos es vieja
+    try:
+        c.execute('ALTER TABLE users ADD COLUMN password TEXT')
+    except:
+        pass
+    conn.commit()
+    conn.close()
+
+# Inicializar la base de datos al arrancar
+init_db()
 
 @app.before_request
 def require_login():
