@@ -1,0 +1,64 @@
+/* =========================================================
+   PORTAL MOBILE FIXES
+   Solo se aplica en pantallas pequeñas (max-width: 767px)
+========================================================= */
+
+@media (max-width: 767px) {
+    /* Ajustar el contenedor general */
+    .portal-container {
+        padding: 2rem 1rem !important;
+    }
+    
+    /* Reorganizar el Header para que se apile verticalmente */
+    .portal-header > div:first-child {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 1.5rem !important;
+    }
+    
+    .portal-header > div:first-child > div:first-child {
+        text-align: center !important;
+    }
+    
+    /* Hacer los botones táctiles más cómodos */
+    .portal-header > div:first-child > div:nth-child(2) {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .portal-header > div:first-child > div:nth-child(2) > * {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+    }
+    
+    /* Achicar el Título Gigante */
+    .portal-title {
+        font-size: 2.8rem !important;
+        line-height: 1.1;
+    }
+    
+    .portal-description {
+        font-size: 0.9rem !important;
+    }
+    
+    /* Ajustar Modal de Amigos al 100% de la pantalla para móviles */
+    #friends-panel > div {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        border-radius: 0 !important;
+        border: none !important;
+        display: flex;
+        flex-direction: column;
+        padding: 1.5rem 1rem !important;
+    }
+    
+    #friends-list {
+        flex: 1;
+        max-height: none !important;
+    }
+}

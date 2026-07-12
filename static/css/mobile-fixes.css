@@ -1,0 +1,7 @@
+/* Archivo individual para ajustes móviles */
+@media (max-width: 767px) {
+    /* Ocultar el botón del portal en móviles */
+    .back-btn.mobile-hidden {
+        display: none !important;
+    }
+}

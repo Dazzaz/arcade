@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Python | Iniciar Sesión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .login-container {
+            position: relative; z-index: 1;
+            background: rgba(20, 20, 20, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px;
+            padding: 4rem 3rem; text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            max-width: 400px; width: 90vw;
+        }
+        .login-form {
+            display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2.5rem;
+        }
+        .login-input {
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);
+            padding: 1rem; border-radius: 4px; color: #fff; font-family: 'Montserrat', sans-serif;
+            font-size: 1rem; outline: none; transition: all 0.3s ease; text-align: center;
+        }
+        .login-input:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(212, 175, 55, 0.2); }
+        .login-btn {
+            background: transparent; color: var(--accent); border: 1px solid var(--accent);
+            padding: 1rem; font-size: 0.9rem; font-weight: 500; border-radius: 4px; cursor: pointer;
+            transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .login-btn:hover { background: var(--accent); color: var(--bg-primary); box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2); }
+    </style>
+</head>
+<body>
+    <div class="elegant-background"></div>
+    
+    <div class="login-container">
+        <h1 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 400; color: #fff; margin-bottom: 0.5rem;">Identidad</h1>
+        <p style="font-size: 0.8rem; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; font-weight: 500;">Ingresa a la Colección</p>
+        
+        {% if error %}
+        <p style="color: #ff4444; font-size: 0.9rem; margin-top: 1rem; margin-bottom: 0;">{{ error }}</p>
+        {% endif %}
+        
+        <form class="login-form" method="POST" action="{{ url_for('login') }}">
+            <input type="text" name="username" class="login-input" placeholder="Tu Nombre o Alias" required autocomplete="off" autofocus>
+            <input type="password" name="password" class="login-input" placeholder="Tu Contraseña Secreta" required>
+            <button type="submit" class="login-btn">Acceder al Arcade</button>
+        </form>
+        
+        <p style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 2rem; max-width: 300px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+            Si el nombre no existe, se creará una cuenta nueva con esa contraseña automáticamente.
+        </p>
+    </div>
+</body>
+</html>

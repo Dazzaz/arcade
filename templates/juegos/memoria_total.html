@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Memoria Total | Arcade Python</title>
+    <meta name="description" content="Juego interactivo de Memoria Total al estilo Simon Dice.">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/juegos/memoria_total.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-fixes.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/juegos/memoria-mobile.css') }}">
+</head>
+<body>
+    <div class="elegant-background"></div>
+    <div class="background-effects" id="bg-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+    </div>
+    
+    <a href="{{ url_for('portal') }}" class="back-btn">← Portal</a>
+    
+    <main class="game-container">
+        <!-- Menú Principal del Juego -->
+        <div id="game-menu" class="game-menu-overlay">
+            <h1 class="menu-title">Memoria Total</h1>
+            <p class="menu-subtitle">Concentración · Memoria · Reacción</p>
+            
+            <div class="menu-rules">
+                <p>Observa la secuencia luminosa. Memoriza el patrón auditivo y visual. Repite la secuencia sin errores para avanzar al siguiente nivel.</p>
+            </div>
+            
+            <div class="menu-actions">
+                <button id="menu-start-btn" class="elegant-btn primary-btn">INICIAR SESIÓN</button>
+                <button id="versus-open-btn" class="elegant-btn" style="border-color: #ff4444; color: #ff4444; position: relative;">
+                    MODO VERSUS
+                    <span id="versus-badge" style="display:none; position:absolute; top:-5px; right:-5px; width:12px; height:12px; background:#ff4444; border-radius:50%; box-shadow: 0 0 8px #ff4444;"></span>
+                </button>
+                <button id="leaderboard-open-btn" class="elegant-btn">PUNTUACIONES</button>
+                <button id="settings-open-btn" class="elegant-btn secondary-btn">AJUSTES</button>
+            </div>
+        </div>
+
+        <!-- Panel de Ajustes -->
+        <div id="settings-panel" class="game-menu-overlay hidden">
+            <h2 class="menu-title" style="font-size: 2.5rem; margin-bottom: 0;">Ajustes</h2>
+            
+            <div class="settings-scroll-area">
+                <div class="settings-content">
+                    
+                    <div class="setting-group">
+                        <label for="theme-select">Forma de Botones</label>
+                        <select id="theme-select" class="glass-select">
+                            <option value="square" selected>Cuadrados (Predeterminado)</option>
+                            <option value="circle">Círculos</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="speed-select">Dificultad (Velocidad)</label>
+                        <select id="speed-select" class="glass-select">
+                            <option value="2.0">Tortuga</option>
+                            <option value="1.5">Lento</option>
+                            <option value="1.0" selected>Normal</option>
+                            <option value="0.6">Rápido</option>
+                            <option value="0.3">Extremo</option>
+                            <option value="0.15">Relámpago (Imposible)</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="board-size-select">Cantidad de Botones</label>
+                        <select id="board-size-select" class="glass-select">
+                            <option value="4" selected>4 Botones (Modo Clásico)</option>
+                            <option value="6">6 Botones (Experto)</option>
+                            <option value="9">9 Botones (Maestro)</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group toggle-group">
+                        <label for="auto-grow-mode">Crecimiento Automático (+botones por nivel)</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="auto-grow-mode">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="synth-select">Instrumento (Sonido)</label>
+                        <select id="synth-select" class="glass-select">
+                            <option value="modern" selected>Sintetizador Moderno</option>
+                            <option value="8bit">8-Bits (Retro Square)</option>
+                            <option value="classic">Arcade Clásico (Sawtooth)</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="volume-slider">Nivel de Audio</label>
+                        <div class="slider-container">
+                            <span>🔈</span>
+                            <input type="range" id="volume-slider" min="0" max="100" value="50">
+                            <span>🔊</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-group toggle-group">
+                        <label for="reverse-mode">Modo Reverso (¡Difícil!)</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="reverse-mode">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-group toggle-group">
+                        <label for="mute-mode">Silenciar Todo</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="mute-mode">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-group toggle-group">
+                        <label for="strict-mode">Modo Estricto (Sin Vidas extra)</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="strict-mode" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                    <div class="setting-group toggle-group">
+                        <label for="visual-effects">Animaciones de Fondo</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="visual-effects" checked>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+
+                </div>
+            </div>
+            
+            <button id="settings-close-btn" class="elegant-btn primary-btn" style="margin-top: 1rem;">GUARDAR Y VOLVER</button>
+        </div>
+
+        <!-- Panel de Puntuaciones -->
+        <div id="leaderboard-panel" class="game-menu-overlay hidden">
+            <h2 class="menu-title" style="font-size: 2.5rem; margin-bottom: 0;">Clasificación</h2>
+            <p class="menu-subtitle">Top 10 Mundial</p>
+            
+            <div class="settings-scroll-area" style="max-height: 50vh; margin-top: 2rem; width: 100%; max-width: 450px;">
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rango</th>
+                            <th>Operador</th>
+                            <th>Nivel</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                        <!-- Filled by JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <button id="leaderboard-close-btn" class="elegant-btn primary-btn" style="margin-top: 1.5rem;">VOLVER AL MENÚ</button>
+        </div>
+
+        <!-- Panel de Versus (Retos) -->
+        <div id="versus-panel" class="game-menu-overlay hidden">
+            <h2 class="menu-title" style="font-size: 2.5rem; margin-bottom: 0; color: #ff4444;">Versus</h2>
+            <p class="menu-subtitle">Desafía a tus conexiones</p>
+            
+            <div class="versus-container">
+                <div class="versus-column">
+                    <h3 class="versus-column-title">Nuevo Reto</h3>
+                    <div id="versus-friends-list" class="versus-list-box">
+                        <div style="color: var(--text-secondary); text-align: center; margin-top: 2rem;">Cargando conexiones...</div>
+                    </div>
+                </div>
+                <div class="versus-column">
+                    <h3 class="versus-column-title">Historial de Duelos</h3>
+                    <div id="versus-challenges-list" class="versus-list-box">
+                        <div style="color: var(--text-secondary); text-align: center; margin-top: 2rem;">Cargando duelos...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="versus-close-btn" class="elegant-btn primary-btn" style="margin-top: 2rem;">VOLVER AL MENÚ</button>
+        </div>
+
+        <!-- Panel de Configuración de Reto -->
+        <div id="challenge-config-panel" class="game-menu-overlay hidden" style="z-index: 200;">
+            <h2 class="menu-title" style="font-size: 2rem; margin-bottom: 0;">Configurar Duelo</h2>
+            <p class="menu-subtitle" id="challenge-target-name">Contra ...</p>
+            
+            <div class="settings-scroll-area" style="max-height: 40vh; margin-top: 1rem; width: 100%; max-width: 400px;">
+                <div class="settings-content">
+                    <div class="setting-group">
+                        <label for="vs-speed-select">Velocidad</label>
+                        <select id="vs-speed-select" class="glass-select">
+                            <option value="1.5">Lento</option>
+                            <option value="1.0" selected>Normal</option>
+                            <option value="0.6">Rápido</option>
+                            <option value="0.3">Extremo</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="vs-board-size">Botones</label>
+                        <select id="vs-board-size" class="glass-select">
+                            <option value="4" selected>4 Botones</option>
+                            <option value="6">6 Botones</option>
+                            <option value="9">9 Botones</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group toggle-group">
+                        <label for="vs-reverse-mode">Modo Reverso</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="vs-reverse-mode">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button id="vs-cancel-btn" class="elegant-btn secondary-btn">CANCELAR</button>
+                <button id="vs-send-btn" class="elegant-btn primary-btn">ENVIAR RETO</button>
+            </div>
+        </div>
+
+        <!-- Interfaz del Juego -->
+        <div id="game-interface" class="game-interface hidden">
+            <header class="game-header">
+                <p class="level-indicator">NIVEL <span id="level-display">0</span></p>
+                <p id="status-message" class="status-message">Inicializando...</p>
+                <p id="lives-display" class="lives-indicator hidden">Vidas: <span>3</span></p>
+            </header>
+
+            <div class="board-wrapper">
+                <div class="simon-board" id="simon-board-container">
+                    <div class="color-btn green" id="green" data-color="green"></div>
+                    <div class="color-btn red" id="red" data-color="red"></div>
+                    <div class="color-btn yellow" id="yellow" data-color="yellow"></div>
+                    <div class="color-btn blue" id="blue" data-color="blue"></div>
+                </div>
+                
+                <div class="controls">
+                    <button id="start-btn" class="elegant-btn">REINICIAR</button>
+                    <button id="quit-btn" class="elegant-btn secondary-btn">MENÚ</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Contenedor de Toast Notificaciones -->
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px;"></div>
+
+    <style>
+        /* Estilos Toast */
+        .toast {
+            background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1); color: #fff;
+            padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-size: 0.9rem; display: flex; align-items: center; gap: 12px;
+            animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 0; transform: translateX(100%);
+        }
+        .toast.success { border-left: 4px solid var(--accent); }
+        .toast.error { border-left: 4px solid #ff4444; }
+        .toast.info { border-left: 4px solid #44aaff; }
+        .toast.fadeOut { animation: fadeOutToast 0.5s ease forwards; }
+
+        @keyframes slideInRight {
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeOutToast {
+            to { opacity: 0; transform: translateY(-10px) scale(0.95); }
+        }
+    </style>
+
+    <script src="{{ url_for('static', filename='js/juegos/memoria_total.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/mobile-fixes.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+# Entornos Virtuales
+venv/
+env/
+ENV/
+
+# Archivos de caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Bases de datos y archivos de prueba locales (Para no compartir cuentas ni récords de prueba)
+database.db
+*.json
+
+# Archivos del IDE / Sistema
+.vscode/
+.idea/
+.DS_Store

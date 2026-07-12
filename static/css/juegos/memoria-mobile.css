@@ -1,0 +1,106 @@
+/* =========================================================
+   MEMORIA TOTAL MOBILE FIXES
+   Solo se aplica en pantallas pequeñas (max-width: 767px)
+========================================================= */
+
+@media (max-width: 767px) {
+    /* Permitir scroll en móviles si la pantalla es muy pequeña */
+    body {
+        align-items: flex-start !important;
+        overflow-y: auto !important;
+    }
+
+    /* Pantalla Completa real: Sin bordes, sin sombras, 100% de la pantalla */
+    .game-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 100vh !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 3rem 1rem 2rem 1rem !important; 
+        border-radius: 0 !important; 
+        border: none !important; 
+        box-shadow: none !important; 
+        background: rgba(10, 10, 10, 0.85) !important;
+        /* Al ser pantalla completa, si el contenido excede el 100vh, permitimos scroll interno */
+        overflow-y: auto !important;
+    }
+    
+    /* El tablero debe compactarse para entrar bien */
+    .board-wrapper {
+        gap: 1.5rem !important;
+        margin-top: 1rem !important;
+    }
+    
+    .simon-board {
+        width: 100% !important;
+        max-width: 320px !important;
+        padding: 0.8rem !important;
+        gap: 0.6rem !important;
+    }
+    
+    /* Ajustar botón de regresar para que no choque */
+    .back-btn:not(.mobile-hidden) {
+        top: 1rem !important;
+        left: 1rem !important;
+        padding: 0.6rem 1rem !important;
+        font-size: 0.75rem !important;
+    }
+    
+    /* Achicar títulos */
+    .menu-title {
+        font-size: 2.2rem !important;
+        margin-top: 1rem !important;
+    }
+    
+    .status-message {
+        font-size: 1.2rem !important;
+    }
+    
+    /* Apilar el Versus Mode */
+    .versus-container {
+        flex-direction: column !important;
+        gap: 1.5rem !important;
+        margin-top: 0.5rem !important;
+    }
+    
+    .versus-column {
+        width: 100% !important;
+    }
+    
+    .versus-list-box {
+        height: 220px !important;
+        padding: 1rem !important;
+    }
+    
+    .versus-item {
+        padding: 0.8rem !important;
+        gap: 0.5rem;
+    }
+    
+    .versus-item-name {
+        font-size: 0.9rem !important;
+    }
+    
+    /* Ajustes para el panel de Settings flotante */
+    .game-menu-overlay {
+        padding: 1rem !important;
+        justify-content: center !important;
+    }
+    
+    .settings-scroll-area {
+        max-height: 55vh !important;
+    }
+    
+    .controls {
+        flex-direction: column !important;
+        gap: 0.8rem !important;
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .elegant-btn {
+        width: 100%;
+        min-height: 48px !important; /* Target táctil grande */
+    }
+}

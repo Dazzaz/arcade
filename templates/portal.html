@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Python | Colección</title>
+    <!-- Elegant Fonts: Playfair Display for headings, Montserrat for text -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/portal-mobile.css') }}">
+</head>
+<body>
+    <div class="elegant-background"></div>
+    
+    <main class="portal-container">
+        <header class="portal-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
+                <div style="text-align: left;">
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.2rem;">Operador Actual</p>
+                    <p style="color: var(--accent); font-weight: 500;">{{ session.username }} <span style="opacity: 0.5; font-size: 0.8em; margin-left: 0.5rem;">#{{ session.user_id[:8] }}</span></p>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button id="friends-open-btn" style="position:relative; background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8rem; transition: all 0.3s;">
+                        Comunicaciones
+                        <span id="friends-badge" class="hidden" style="position:absolute; top:-5px; right:-5px; width:12px; height:12px; background:#ff4444; border-radius:50%; box-shadow: 0 0 8px #ff4444;"></span>
+                    </button>
+                    <a href="{{ url_for('logout') }}" style="color: var(--text-secondary); text-decoration: none; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 4px; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--accent)'; this.style.color='var(--accent)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.color='var(--text-secondary)';">Cambiar Usuario</a>
+                </div>
+            </div>
+            <span class="subtitle">COLECCIÓN EXCLUSIVA</span>
+            <h1 class="portal-title">Arcade Python</h1>
+            <div class="divider"></div>
+            <p class="portal-description">Una fina selección de experiencias interactivas y desafíos mentales. Selecciona una obra para comenzar.</p>
+        </header>
+
+        <div class="gallery">
+            <!-- Game Card: Memoria Total -->
+            <a href="{{ url_for('memoria_total') }}" class="gallery-item">
+                <div class="image-wrapper">
+                    <img src="{{ url_for('static', filename='assets/img/game/memoria-total.png') }}" alt="Portada Memoria Total" class="game-cover">
+                    <div class="overlay">
+                        <span class="play-text">INICIAR EXPERIENCIA</span>
+                    </div>
+                </div>
+                <div class="item-details">
+                    <h2>Memoria Total</h2>
+                    <p>Secuencias, luces y sonido en perfecta armonía.</p>
+                </div>
+            </a>
+            
+            <!-- Placeholder for upcoming games -->
+            <div class="gallery-item disabled">
+                <div class="image-wrapper empty-wrapper">
+                    <span class="coming-soon-mark">Próximamente</span>
+                </div>
+                <div class="item-details">
+                    <h2>Obra en Desarrollo</h2>
+                    <p>Nuevos desafíos están siendo creados.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Contenedor de Toast Notificaciones -->
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px;"></div>
+
+    <!-- Overlay de Amigos -->
+    <div id="friends-panel" class="hidden" style="position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 100; display: flex; justify-content: center; align-items: center;">
+        <div style="background: rgba(20,20,20,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 2rem; width: 90%; max-width: 500px; color: #fff;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-family: 'Playfair Display', serif; font-weight: 400; color: var(--accent);">Comunicaciones (Amigos)</h2>
+                <button id="friends-close-btn" style="background: transparent; color: #fff; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.9rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.5rem; letter-spacing: 1px;">Añadir Nuevo Contacto</h3>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="friend-search-input" placeholder="Buscar por Nombre o ID..." style="flex: 1; padding: 0.8rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 4px;">
+                    <button id="friend-search-btn" style="background: var(--accent); color: #000; border: none; padding: 0 1.5rem; border-radius: 4px; font-weight: bold; cursor: pointer;">Buscar</button>
+                </div>
+                <div id="search-results" style="margin-top: 1rem; background: rgba(0,0,0,0.3); border-radius: 4px; max-height: 150px; overflow-y: auto;"></div>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h3 style="font-size: 0.9rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.5rem; letter-spacing: 1px;">Solicitudes Pendientes</h3>
+                <div id="pending-list" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 1rem; max-height: 150px; overflow-y: auto;">
+                    <div style="text-align:center; color:#888;">No tienes solicitudes pendientes.</div>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="font-size: 0.9rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.5rem; letter-spacing: 1px;">Tus Conexiones Activas</h3>
+                <div id="friends-list" style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; padding: 1rem; min-height: 100px; max-height: 200px; overflow-y: auto;">
+                    Cargando...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .hidden { display: none !important; }
+        .friend-item { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .friend-item:last-child { border-bottom: none; }
+        .add-friend-btn { background: transparent; color: var(--accent); border: 1px solid var(--accent); padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer; transition: 0.2s; font-size: 0.8rem;}
+        .add-friend-btn:hover { background: var(--accent); color: #000; }
+
+        /* Estilos Toast */
+        .toast {
+            background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1); color: #fff;
+            padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-size: 0.9rem; display: flex; align-items: center; gap: 12px;
+            animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            opacity: 0; transform: translateX(100%);
+        }
+        .toast.success { border-left: 4px solid var(--accent); }
+        .toast.error { border-left: 4px solid #ff4444; }
+        .toast.info { border-left: 4px solid #44aaff; }
+        .toast.fadeOut { animation: fadeOutToast 0.5s ease forwards; }
+
+        @keyframes slideInRight {
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeOutToast {
+            to { opacity: 0; transform: translateY(-10px) scale(0.95); }
+        }
+    </style>
+
+    <script>
+        // Función moderna de Notificaciones
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            let icon = `<span style="color: #44aaff; font-size:1.2rem;">&#8505;</span>`;
+            if (type === 'success') icon = `<span style="color: var(--accent); font-size:1.2rem;">&#10003;</span>`;
+            if (type === 'error') icon = `<span style="color: #ff4444; font-size:1.2rem;">&#10005;</span>`;
+            
+            toast.innerHTML = `${icon} <span>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('fadeOut');
+                toast.addEventListener('animationend', () => toast.remove());
+            }, 3000);
+        }
+
+        const friendsOpenBtn = document.getElementById('friends-open-btn');
+        const friendsCloseBtn = document.getElementById('friends-close-btn');
+        const friendsPanel = document.getElementById('friends-panel');
+        const friendsList = document.getElementById('friends-list');
+        const searchInput = document.getElementById('friend-search-input');
+        const searchBtn = document.getElementById('friend-search-btn');
+        const searchResults = document.getElementById('search-results');
+        
+        const friendsBadge = document.getElementById('friends-badge');
+        const pendingList = document.getElementById('pending-list');
+
+        // Polling para notificaciones
+        setInterval(checkPendingRequests, 10000);
+        checkPendingRequests();
+
+        async function checkPendingRequests() {
+            try {
+                const res = await fetch('/api/pending_requests');
+                const data = await res.json();
+                
+                if(data.length > 0) {
+                    friendsBadge.classList.remove('hidden');
+                } else {
+                    friendsBadge.classList.add('hidden');
+                }
+                
+                if(!friendsPanel.classList.contains('hidden')) {
+                    renderPending(data);
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function renderPending(data) {
+            pendingList.innerHTML = '';
+            if(data.length === 0) {
+                pendingList.innerHTML = '<div style="text-align:center; color:#888;">No tienes solicitudes pendientes.</div>';
+                return;
+            }
+            data.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'friend-item';
+                div.innerHTML = `
+                    <div>
+                        <span style="font-weight: 500;">${p.username}</span>
+                        <span style="font-size: 0.8em; color: #888; margin-left: 0.5rem;">#${p.user_id.substring(0,8)}</span>
+                    </div>
+                    <div style="display:flex; gap:0.5rem;">
+                        <button class="add-friend-btn" style="background:var(--accent); color:#000;" onclick="respondRequest('${p.user_id}', 'accept')">ACEPTAR</button>
+                        <button class="add-friend-btn" style="border-color:#ff4444; color:#ff4444;" onclick="respondRequest('${p.user_id}', 'reject')">RECHAZAR</button>
+                    </div>
+                `;
+                pendingList.appendChild(div);
+            });
+        }
+
+        async function respondRequest(userId, action) {
+            try {
+                const res = await fetch('/api/respond_request', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({target_id: userId, action: action})
+                });
+                const data = await res.json();
+                if(data.status === 'success') {
+                    showToast('Solicitud gestionada con éxito.', 'success');
+                    checkPendingRequests();
+                    loadFriends();
+                }
+            } catch(e) {
+                showToast('Error al responder a la solicitud.', 'error');
+            }
+        }
+
+        friendsOpenBtn.addEventListener('click', () => {
+            friendsPanel.classList.remove('hidden');
+            loadFriends();
+            checkPendingRequests();
+        });
+
+        friendsCloseBtn.addEventListener('click', () => {
+            friendsPanel.classList.add('hidden');
+            searchResults.innerHTML = '';
+            searchInput.value = '';
+        });
+
+        async function loadFriends() {
+            friendsList.innerHTML = '<div style="text-align:center; padding:1rem;">Cargando conexiones...</div>';
+            try {
+                const res = await fetch('/api/friends');
+                const data = await res.json();
+                friendsList.innerHTML = '';
+                if(data.length === 0) {
+                    friendsList.innerHTML = '<div style="text-align:center; color:#888; padding:1rem;">Aún no tienes conexiones registradas.</div>';
+                    return;
+                }
+                data.forEach(f => {
+                    friendsList.innerHTML += `
+                        <div class="friend-item">
+                            <div>
+                                <span style="font-weight: 500; color: #fff;">${f.username}</span>
+                                <span style="font-size: 0.8em; color: #888; margin-left: 0.5rem;">#${f.user_id.substring(0,8)}</span>
+                            </div>
+                            <button class="add-friend-btn" style="border-color:#ff4444; color:#ff4444; padding:0.2rem 0.5rem; font-size:0.7rem;" onclick="removeFriend('${f.user_id}')" title="Eliminar conexión">&times; ELIMINAR</button>
+                        </div>
+                    `;
+                });
+            } catch (e) {
+                friendsList.innerHTML = '<div style="color:red; text-align:center;">Error al cargar.</div>';
+            }
+        }
+
+        searchBtn.addEventListener('click', async () => {
+            const query = searchInput.value.trim();
+            if(!query) return;
+            
+            searchResults.innerHTML = '<div style="padding:0.8rem; text-align:center;">Buscando...</div>';
+            try {
+                const res = await fetch('/api/search_user?q=' + encodeURIComponent(query));
+                const data = await res.json();
+                searchResults.innerHTML = '';
+                if(data.length === 0) {
+                    searchResults.innerHTML = '<div style="padding:0.8rem; text-align:center; color:#888;">No se encontraron operadores.</div>';
+                    return;
+                }
+                data.forEach(u => {
+                    const div = document.createElement('div');
+                    div.className = 'friend-item';
+                    div.innerHTML = `
+                        <div>
+                            <span style="font-weight: 500;">${u.username}</span>
+                            <span style="font-size: 0.8em; color: #888; margin-left: 0.5rem;">#${u.user_id.substring(0,8)}</span>
+                        </div>
+                        <button class="add-friend-btn" onclick="addFriend('${u.user_id}')">AGREGAR</button>
+                    `;
+                    searchResults.appendChild(div);
+                });
+            } catch (e) {
+                searchResults.innerHTML = '<div style="color:red; text-align:center; padding:0.8rem;">Error de búsqueda.</div>';
+            }
+        });
+
+        async function addFriend(userId) {
+            try {
+                const res = await fetch('/api/add_friend', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({target_id: userId})
+                });
+                const data = await res.json();
+                if(data.status === 'success' || data.status === 'info') {
+                    showToast(data.msg || 'Solicitud de conexión enviada.', 'success');
+                    searchResults.innerHTML = '';
+                    searchInput.value = '';
+                } else {
+                    showToast('No se pudo enviar la solicitud.', 'error');
+                }
+            } catch(e) {
+                showToast('Error de conexión de red.', 'error');
+            }
+        }
+
+        async function removeFriend(userId) {
+            if(!confirm('¿Estás seguro de que deseas desvincular a este operador?')) return;
+            
+            try {
+                const res = await fetch('/api/remove_friend', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({target_id: userId})
+                });
+                const data = await res.json();
+                if(data.status === 'success') {
+                    showToast('Conexión eliminada correctamente.', 'info');
+                    loadFriends();
+                } else {
+                    showToast('No se pudo eliminar la conexión.', 'error');
+                }
+            } catch(e) {
+                showToast('Error al procesar la solicitud.', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
