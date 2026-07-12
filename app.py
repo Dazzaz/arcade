@@ -3,6 +3,7 @@ import json
 import os
 import random
 import sqlite3
+import migrate
 from datetime import timedelta
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
