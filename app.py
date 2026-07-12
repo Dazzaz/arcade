@@ -351,42 +351,45 @@ def get_friends():
 
 @app.route('/api/create_challenge', methods=['POST'])
 def create_challenge():
-    target_id = request.json.get('target_id')
-    settings = request.json.get('settings', {})
-    if not target_id: return jsonify({'status': 'error'}), 400
-    
-    uid = session['user_id']
-    conn = get_db()
-    c = conn.cursor()
-    
-    # Check si ya hay reto pendiente
-    c.execute('''
-        SELECT * FROM challenges 
-        WHERE ((creator_id = ? AND target_id = ?) OR (creator_id = ? AND target_id = ?))
-        AND status != 'completed'
-    ''', (uid, target_id, target_id, uid))
-    existing = c.fetchone()
-    
-    if existing:
-        conn.close()
-        return jsonify({'status': 'error', 'msg': 'Ya tienes un reto pendiente con esta conexión. Vence el actual primero.'})
+    try:
+        target_id = request.json.get('target_id')
+        settings = request.json.get('settings', {})
+        if not target_id: return jsonify({'status': 'error', 'msg': 'Falta target_id'}), 400
         
-    new_id = str(uuid.uuid4())
-    seed = random.randint(1, 999999999)
-    
-    c.execute('''
-        INSERT INTO challenges 
-        (id, creator_id, target_id, seed, settings, status) 
-        VALUES (?, ?, ?, ?, ?, ?)
-    ''', (new_id, uid, target_id, seed, json.dumps(settings), 'pending_both'))
-    
-    conn.commit()
-    conn.close()
-    
-    return jsonify({'status': 'success', 'challenge': {
-        'id': new_id, 'creator_id': uid, 'target_id': target_id,
-        'seed': seed, 'status': 'pending_both'
-    }})
+        uid = session['user_id']
+        conn = get_db()
+        c = conn.cursor()
+        
+        # Check si ya hay reto pendiente
+        c.execute('''
+            SELECT * FROM challenges 
+            WHERE ((creator_id = ? AND target_id = ?) OR (creator_id = ? AND target_id = ?))
+            AND status != 'completed'
+        ''', (uid, target_id, target_id, uid))
+        existing = c.fetchone()
+        
+        if existing:
+            conn.close()
+            return jsonify({'status': 'error', 'msg': 'Ya tienes un reto pendiente con esta conexión. Vence el actual primero.'})
+            
+        new_id = str(uuid.uuid4())
+        seed = random.randint(1, 999999999)
+        
+        c.execute('''
+            INSERT INTO challenges 
+            (id, creator_id, target_id, seed, settings, status) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (new_id, uid, target_id, seed, json.dumps(settings), 'pending_both'))
+        
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'status': 'success', 'challenge': {
+            'id': new_id, 'creator_id': uid, 'target_id': target_id,
+            'seed': seed, 'status': 'pending_both'
+        }})
+    except Exception as e:
+        return jsonify({'status': 'error', 'msg': f'Error del Servidor: {str(e)}'}), 500
 
 @app.route('/api/challenges', methods=['GET'])
 def get_challenges():
